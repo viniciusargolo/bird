@@ -6,6 +6,7 @@ sprites.src = "./assets/sprites.png"
 const canvas = document.querySelector("canvas")
 const ctx = canvas.getContext("2d")
 
+// [criação do pássaro]
 const bird = {
     spriteX: 0,
     spriteY: 0, 
@@ -32,6 +33,7 @@ const bird = {
     }
 }
 
+// [criação do chão]
 const base = {
     spriteX: 0,
     spriteY: 610, 
@@ -57,6 +59,7 @@ const base = {
     }
 }
 
+// [criação do background]
 const bg = {
     spriteX: 390,
     spriteY: 0, 
@@ -77,14 +80,74 @@ const bg = {
     }
 }
 
+// [criação da mensagem inicial]
+
+const messageGetReady = {
+    spriteX: 134,
+    spriteY: 0, 
+    sWidth: 174,
+    sHeight: 152, 
+    dx: (canvas.width - 174) / 2 , 
+    dy: (canvas.height - 152) / 2, 
+    draw(){
+        ctx.drawImage(
+            sprites,
+            messageGetReady.spriteX, messageGetReady.spriteY, 
+            messageGetReady.sWidth, messageGetReady.sHeight, 
+            messageGetReady.dx, messageGetReady.dy, 
+            messageGetReady.sWidth, messageGetReady.sHeight
+        )  
+    }
+}
+let activeScreen = {}
+
+function changeScreen(newScreen) {
+    activeScreen = newScreen
+}
+
+const Screens = {
+    START: {
+        draw() {
+            bg.draw()
+            base.draw()
+            bird.draw()
+            messageGetReady.draw()            
+        },
+        keydown() {
+         changeScreen(Screens.GAME)
+        },
+        refresh() {
+
+        }
+    }
+}
+
+Screens.GAME = {
+    draw() {
+        bg.draw()
+        base.draw()
+        bird.draw()
+    },
+    refresh() {
+        bird.refresh()
+    }
+}
+
+
 function loop() {
-    bg.draw()
-    base.draw()
-    bird.draw()
-    bird.refresh()
-   
+    
+    activeScreen.draw()
+    activeScreen.refresh()
 
     requestAnimationFrame(loop)
 }
 
+
+window.addEventListener("keydown", () => {
+    if(activeScreen.keydown ){
+        activeScreen.keydown() 
+    }
+})
+
+changeScreen(Screens.START)
 loop()
